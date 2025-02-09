@@ -1,0 +1,39 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  #classification {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  #classification h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  #classification table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  
+  #classification th,
+  #classification td {
+    border: 1px solid #fff;
+    padding: 10px;
+  }
+  
+  #classification thead tr {
+    background: #D95F45;
+    color: #fff;
+  }
+  
+  #classification tbody tr {
+    background: #F47C57;
+    color: #fff;
+  }
+  

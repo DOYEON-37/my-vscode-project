@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>이물검사 교육</title>
+  <!-- Poppins 폰트 적용 -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Global 스타일 */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom right, #ffffff, #ffffff);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+    }
+    /* 사이드바 스타일 */
+    .sidebar {
+      width: 150px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      height: 100vh;
+    }
+    .sidebar button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      background: #D95F45;
+      color: #ffffff;
+      border: 2px solid #D95F45;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .sidebar button:hover {
+      background: #D95F45;
+      color: #ffffff;
+    }
+    /* 메인 콘텐츠 영역 */
+    .content {
+      margin-left: 150px;
+      padding: 20px;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+    }
+    /* 섹션(카드) 스타일 */
+    main section {
+      display: none;
+      background: #ffffff;
+      color: #D95F45;
+      padding: 60px;
+      border: 2px solid #D95F45;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      max-width: 1000px;
+      width: 100%;
+      position: relative;
+    }
+    main section.active {
+      display: block;
+    }
+    /* 제목 및 텍스트 */
+    h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    li {
+      font-size: 1rem;
+      text-align: left;
+      margin-bottom: 8px;
+    }
+    /* 섹션 내부 버튼 스타일 */
+    .slide button,
+    section button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #ffffff;
+      color: #D95F45;
+      border: 2px solid #D95F45;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .slide button:hover,
+    section button:hover {
+      background: transparent;
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+    /* 비디오 영역 */
+    #video-container {
+      text-align: center;
+    }
+    /* 이물 유형 버튼들 */
+    .item-buttons button {
+      margin: 5px;
+      padding: 8px 16px;
+      background: #ffffff;
+      color: #D95F45;
+      border: 2px solid #D95F45;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .item-buttons button:hover {
+      background: transparent;
+      color: #ffffff;
+      border-color: #ffffff;
+    }
+    /* 표 스타일 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #ffffff;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    /* 트레이닝 섹션 조정 */
+    #training {
+      background: linear-gradient(to right, #D95F45, #F47C57);
+      color: #D95F45;
+      padding: 60px;
+      border-radius: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      max-width: 1000px;
+      width: 100%;
+      position: relative;
+    }
+    #training h2,
+    #training h3 {
+      text-align: center;
+    }
+    #training button {
+      margin: 10px;
+    }
+    #training input[type="text"] {
+      padding: 8px;
+      border-radius: 25px;
+      border: 2px solid #D95F45;
+      margin-top: 10px;
+    }
+    #result-message {
+      margin-top: 10px;
+      font-size: 1.2rem;
+    }
+    /* 이미지 반응형 */
+    .item-description img {
+      max-width: 100%;
+      height: auto;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+    /* 트레이닝 섹션 – 이물 예시 가로 배치 */
+    .horizontal-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .horizontal-list li {
+      font-size: 1rem;
+    }
+  </style>
+  <script>
+    // 섹션 배열 업데이트 (6개 섹션)
+    const sections = ["purpose", "qualification", "importance", "classification", "description", "training"];
+    let currentSection = 0;
+    function showSection(index) {
+      // 슬라이드 관련 요소가 있으면 숨김 (예: slide-4)
+      if(document.getElementById('slide-4')){
+        document.getElementById('slide-4').style.display = 'none';
+      }
+      // 모든 섹션 숨기기
+      document.querySelectorAll('main section').forEach(section => {
+        section.classList.remove('active');
+      });
+      // 해당 섹션 보여주기
+      document.getElementById(sections[index]).classList.add('active');
+      currentSection = index;
+    }
+    // 기존 슬라이드 함수 (여전히 남겨둘 경우)
+    function nextSlide(currentSlideId, nextSlideId) {
+      document.getElementById(currentSlideId).style.display = 'none';
+      document.getElementById(nextSlideId).style.display = 'block';
+    }
+    function resetPurpose() {
+      // 만약 목적 섹션에 슬라이드가 있었다면 초기화 (이제 슬라이드 없음)
+    }
+    function resetClassification() {
+      document.getElementById('slide-4').style.display = 'none';
+      document.getElementById('classification').style.display = 'block';
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      showSection(0);  // 초기 섹션: 이물검사
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <!-- 사이드바 버튼 순서: 이물검사, 자격검증, 이물검사 방법, 결함 분류, 이물 유형 및 설명, 트레이닝 -->
+      <button onclick="showSection(0)">이물검사</button>
+      <button onclick="showSection(1)">자격검증</button>
+      <button onclick="showSection(2)">이물검사 방법</button>
+      <button onclick="showSection(3)">결함 분류</button>
+      <button onclick="showSection(4)">이물 유형 및 설명</button>
+      <button onclick="showSection(5)">트레이닝</button>
+    </nav>
+
+    <main class="content">
+      <!-- 1. 이물검사 섹션 (슬라이드 없이 정적 내용) -->
+      <section id="purpose" class="active">
+        <h2>이물검사란?</h2>
+        <ul>
+          <li><h3>의약품 제조 과정에서 이물이 혼입되었는지 검사하는 과정</h3></li>
+          <li><h3>이물은 제품의 품질과 안전성에 직접 영향을 미치므로 철저한 검사가 필수</h3></li>
+          <li><h3>조제 → 충전 → 이물검사(100% 전수검사) → 검체 채취 및 시험 → 포장</h3></li>
+        </ul>
+      </section>
+
+      <!-- 2. 자격검증 섹션 (새로 추가) -->
+      <section id="qualification">
+        <h2>이물검사자 적합성평가</h2>
+        <ul>
+          <li>이물검사자는 근시 1.0 이상의 시력을 보유한 자여야한다</li>
+          <li>이물검사자가 다루는 각 제제 및 포장자재의 유형별로 수행되어야한다</li>
+          <li>수동 및 반자동 이물검사 시, 자격을 갖춘 작업자만 수행할 수 있다</li>
+          <li>신규 이물검사자는 시험검사 세트로 3회 검사를 실시하고, 모두 적합한 경우에만 자격을 부여받는다</li>
+          <li>이물검사자는 매년 재적합성평가를 받아야한다. </li>
+          <li>재적합성평가의 경우에는 시험검사 세트로 1회만 성공해도 적합한 이물검사자로 판정할 수 있다 </li>
+        </ul>
+      </section>
+
+      <!-- 3. 이물검사 방법 섹션 -->
+      <section id="importance">
+        <h2>이물검사 방법</h2>
+        <div id="video-container">
+          <video controls width="800">
+            <source src="your-video-file.mp4" type="video/mp4">
+            브라우저가 동영상을 지원하지 않습니다.
+          </video>
+        </div>
+      </section>
+
+      <!-- 4. 결함 분류 섹션 -->
+      <section id="classification">
+        <h2>결함 분류</h2>
+        <table style="width: 100%; border-collapse: collapse; text-align: center;">
+          <thead>
+            <tr style="background: #ffb65c; color: #D95F45;">
+              <th style="border: 1px solid #F47C57; padding: 10px;">중요도</th>
+              <th style="border: 1px solid #F47C57; padding: 10px;">이물 유형</th>
+              <th style="border: 1px solid #F47C57; padding: 10px;">설명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: #ffffff; color: #F47C57;">
+              <td style="border: 1px solid #D95F45; padding: 10px;">Critical</td>
+              <td style="border: 1px solid #D95F45; padding: 10px;">흰, 검정, 고무전, 유리, 누액</td>
+              <td style="border: 1px solid #D95F45; padding: 10px;">
+                제품 품질 및 무균성에 직접 영향을 주는 외부 이물질 포함
+              </td>
+            </tr>
+            <tr style="background: #ffffff; color: #F47C57;">
+              <td style="border: 1px solid #D95F45; padding: 10px;">Major</td>
+              <td style="border: 1px solid #D95F45; padding: 10px;">내용량 불량, 고무전 높이 불량, 시린지 파손</td>
+              <td style="border: 1px solid #D95F45; padding: 10px;">
+                외부 이물질은 없으나 무균성이나 품질에 간접적 영향
+              </td>
+            </tr>
+            <tr style="background: #ffffff; color: #F47C57;">
+              <td style="border: 1px solid #D95F45; padding: 10px;">Minor</td>
+              <td style="border: 1px solid #D95F45; padding: 10px;">용기 스크래치</td>
+              <td style="border: 1px solid #D95F45; padding: 10px;">
+                제품 품질에는 영향 없으나 외형(미관)상 영향
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- 5. 이물 유형 및 설명 섹션 -->
+      <section id="description">
+        <div class="item-buttons">
+          <button onclick="showItem('white')">흰 이물</button>
+          <button onclick="showItem('black')">검정 이물</button>
+          <button onclick="showItem('rubber')">고무전 이물</button>
+          <button onclick="showItem('glass')">유리 이물</button>
+          <button onclick="showItem('thread')">실 이물</button>
+          <button onclick="showItem('leak')">누액</button>
+          <button onclick="showItem('underfill')">내용량 불량</button>
+          <button onclick="showItem('rubber-height')">고무전 높이 불량</button>
+          <button onclick="showItem('syringe-damage')">시린지 파손</button>
+          <button onclick="showItem('scratch')">용기 스크래치</button>
+        </div>
+    
+        <div id="white" class="item-description" style="display: none;">
+          <p>흰색 이물은 주로 반투명 또는 불투명한 흰색 입자</p>
+          <p>원인: 단백질 응집체, 플라스틱 조각, 미세 필터 섬유</p>
+          <p>검출 시, 부유물 형태 혹은 용기 표면 부착</p>
+          <img src="images/foreign_object_white1.png" alt="흰 이물 이미지">
+          <img src="images/foreign_object_white2.png" alt="흰 이물 이미지">
+        </div>
+    
+        <div id="black" class="item-description" style="display: none;">
+          <p>검정 이물은 검은색 또는 짙은 갈색 입자</p>
+          <p>원인: 탄화된 유기물, 오염된 고무 조각</p>
+          <p>검출 시, 점 또는 선 형태</p>
+          <img src="images/foreign_object_black1.png" alt="검정 이물 이미지">
+          <img src="images/foreign_object_black2.png" alt="검정 이물 이미지">
+        </div>
+    
+        <div id="rubber" class="item-description" style="display: none;">
+          <p>고무전 이물은 고무전 오염 또는 손상 시 발생</p>
+          <p>원인: 생산 시 오염, 물리적 충격 등</p>
+          <p>검출 시, 점 또는 선 형태로 다양한 색상</p>
+          <img src="images/foreign_object_rubber1.png" alt="고무전 이물 이미지">
+          <img src="images/foreign_object_rubber2.png" alt="고무전 이물 이미지">
+          <img src="images/foreign_object_rubber3.png" alt="고무전 이물 이미지">
+        </div>
+    
+        <div id="glass" class="item-description" style="display: none;">
+          <p>유리 이물은 투명하거나 반짝이는 유리조각</p>
+          <p>원인: 바이알, 앰플, 카트리지 용기 파손 또는 마감 불량</p>
+          <p>검출 시, 크기가 작더라도 치명적이므로 정밀 검사 필요</p>
+          <img src="images/foreign_object_glass.png" alt="유리 이물 이미지">
+        </div>
+    
+        <div id="thread" class="item-description" style="display: none;">
+          <p>실 이물은 가늘고 긴 섬유 형태</p>
+          <p>원인: 작업자 의복, 포장재 섬유 유입</p>
+          <p>검출 시, 흰색 또는 검정색 등 다양한 색상</p>
+          <img src="images/foreign_object_thread1.png" alt="실 이물 이미지">
+          <img src="images/foreign_object_thread2.png" alt="실 이물 이미지">
+        </div>
+    
+        <div id="leak" class="item-description" style="display: none;">
+          <p>누액은 주사액이 외부로 유출되는 불량</p>
+          <p>원인: 고무마개 밀착 불량, 유리 용기 균열</p>
+          <p>검출 시, 고무전 3칸 모두 누액이면 불량 판정</p>
+          <img src="images/foreign_object_normal_leak.png" alt="누액 이미지">
+          <img src="images/foreign_object_leak1.png" alt="누액 이미지">
+        </div>
+    
+        <div id="underfill" class="item-description" style="display: none;">
+          <p>내용량 불량은 기준보다 과다하거나 부족한 충전</p>
+          <p>원인: 불완전한 충전</p>
+          <p>검출 시, 양품과 비교하여 판정</p>
+          <img src="images/foreign_object_quantity.png" alt="내용량 불량 이미지">
+        </div>
+    
+        <div id="rubber-height" class="item-description" style="display: none;">
+          <p>고무전 높이 불량은 정상 위치보다 높거나 낮게 배치된 불량</p>
+          <p>원인: 충전량 조절 문제, 공정 중 압력 이상</p>
+          <p>검출 시, 양품 기준과 한 칸 이상 차이 시 불량 판정</p>
+          <img src="images/foreign_object_rubber_height.png" alt="고무전 높이 불량 이미지">
+        </div>
+    
+        <div id="syringe-damage" class="item-description" style="display: none;">
+          <p>시린지 파손은 깨짐이나 균열 등</p>
+          <p>원인: 물리적 충격</p>
+          <p>검출 시, 네스트 위에서 파손 부위가 검정색으로 보일 수 있음</p>
+          <img src="images/foreign_object_syringe1.png" alt="시린지 파손 이미지">
+          <img src="images/foreign_object_syringe2.png" alt="시린지 파손 이미지">
+          <img src="images/foreign_object_syringe3.png" alt="시린지 파손 이미지">
+        </div>
+    
+        <div id="scratch" class="item-description" style="display: none;">
+          <p>용기 스크래치는 표면의 긁힘 혹은 선명한 흠집 (기스 제외)</p>
+          <p>원인: 생산 또는 운송 중 마찰</p>
+          <p>검출 시, 파손 위험이 예상되면 불량 판정</p>
+          <img src="images/foreign_object_normal_container.png" alt="용기 스크래치 이미지">
+          <img src="images/foreign_object_container1.png" alt="용기 스크래치 이미지">
+          <img src="images/foreign_object_container2.png" alt="용기 스크래치 이미지">
+        </div>
+      </section>
+  
+      <!-- 스크립트: DOMContentLoaded 이후 전역 함수 showItem() 정의 -->
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          window.showItem = function(item) {
+            // 모든 .item-description 요소 숨김
+            var descriptions = document.querySelectorAll('.item-description');
+            descriptions.forEach(function(el) {
+              el.style.display = 'none';
+            });
+            // 지정한 ID의 요소 보이기
+            var target = document.getElementById(item);
+            if (target) {
+              target.style.display = 'block';
+            } else {
+              console.error("Element with id '" + item + "' not found.");
+            }
+          }
+        });
+      </script>
+  
+      <!-- 6. 트레이닝 섹션 -->
+      <section id="training" style="background: none; padding: 20px;">
+        <h2>이물 검사 트레이닝</h2>
+        <!-- 전체 영역을 두 개의 열로 나눔: 좌측은 이미지, 우측은 컨트롤 영역 -->
+        <div style="display: flex; align-items: stretch;">
+          <!-- 이미지 영역 (좌측) -->
+          <div id="image-container" style="flex: 0 0 60%; text-align: center;">
+            <!-- 이미지가 컨테이너 폭(100%)에 맞게 표시됨 -->
+            <img id="training-image" src="images/rubber1_front.png" alt="이물 유형 이미지" style="width: 100%; height: auto;">
+          </div>
+          <!-- 컨트롤 영역 (우측) -->
+          <div style="flex: 0 0 40%; text-align: center; padding-left: 20px;">
+            <button onclick="changeView('front')">FRONT</button>
+            <button onclick="changeView('side')">SIDE</button>
+            <button onclick="changeView('back')">BACK</button>
+            <button onclick="changeView('zoom')">ZOOM-IN</button>
+            <br><br>
+            <input type="text" id="answer-input" placeholder="정답 입력" onkeydown="if(event.key==='Enter'){checkAnswer();}">
+            <button onclick="checkAnswer()">정답 입력</button>
+            <p id="result-message"></p>
+            <!-- 정답 후 다음 예시로 넘어가기 위한 버튼 -->
+            <button id="next-button" onclick="nextExample()" style="display: none;">다음 예시</button>
+          
+    
+            <!-- 이물 예시 목록을 컨트롤 영역 내부, 정답 입력 칸 아래에 배치 -->
+            <h3 style="font-size: 1.2rem; margin-top: 30px;">이물 예시</h3>
+            <ul class="horizontal-list" style="font-size: 0.9rem;">
+                <li>흰 이물</li>
+                <li>검정 이물</li>
+                <li>고무전 이물</li>
+                <li>유리 이물</li>
+                <li>누액</li>
+                <li>내용량 불량</li>
+                <li>고무전 높이 불량</li>
+                <li>시린지 파손</li>
+                <li>용기 스크래치</li>
+            </ul>
+            <!-- 30개 예시 내비게이션 버튼 영역 -->
+            <div id="example-nav" style="text-align: center; margin-top: 20px;"></div>
+        </section>
+  
+      <script>
+        // 30개의 트레이닝 예시 데이터를 저장하는 배열 (예시로 3개만 기입)
+        const trainingData = [
+          {
+            front: "images/rubber1_front.png",
+            side: "images/rubber1_side.png",
+            back: "images/rubber1_back.png",
+            zoom: "images/rubber1_zoom.png",
+            answer: "고무전 이물"
+          },
+          {
+            front: "images/glass1_front.png",
+            side: "images/glass1_side.png",
+            back: "images/glass1_back.png",
+            zoom: "images/glass1_zoom.png",
+            answer: "유리 이물"
+          },
+          {
+            front: "images/leak1_front.png",
+            side: "images/leak1_side.png",
+            back: "images/leak1_back.png",
+            zoom: "images/leak1_zoom.png",
+            answer: "누액"
+          },
+          {
+            front: "images/black1_front.png",
+            side: "images/black1_side.png",
+            back: "images/black1_back.png",
+            zoom: "images/black1_zoom.png",
+            answer: "검정 이물"
+          },
+          {
+            front: "images/rubber2_front.png",
+            side: "images/rubber2_side.png",
+            back: "images/rubber2_back.png",
+            zoom: "images/rubber2_zoom.png",
+            answer: "고무전 이물"
+          },
+          {
+            front: "images/white1_front.png",
+            side: "images/white1_side.png",
+            back: "images/white1_back.png",
+            zoom: "images/white1_zoom.png",
+            answer: "흰 이물"
+          },
+          {
+            front: "images/leak2_front.png",
+            side: "images/leak2_side.png",
+            back: "images/leak2_back.png",
+            zoom: "images/leak2_zoom.png",
+            answer: "양품"
+          },
+          {
+            front: "images/rubber3_front.png",
+            side: "images/rubber3_side.png",
+            back: "images/rubber3_back.png",
+            zoom: "images/rubber3_zoom.png",
+            answer: "고무전 이물"
+          },
+          {
+            front: "images/leak4_front.png",
+            side: "images/leak4_side.png",
+            back: "images/leak4_back.png",
+            zoom: "images/leak4_zoom.png",
+            answer: "누액"
+          },
+          {
+            front: "images/white2_front.png",
+            side: "images/white2_side.png",
+            back: "images/white2_back.png",
+            zoom: "images/white2_zoom.png",
+            answer: "흰 이물"
+          },
+          {
+            front: "images/leak3_front.png",
+            side: "images/leak3_side.png",
+            back: "images/leak3_back.png",
+            zoom: "images/leak3_zoom.png",
+            answer: "양품"
+          },
+          {
+            front: "images/leak5_front.png",
+            side: "images/leak5_side.png",
+            back: "images/leak5_back.png",
+            zoom: "images/leak5_zoom.png",
+            answer: "누액"
+          },
+          {
+            front: "images/leak6_front.png",
+            side: "images/leak6_side.png",
+            back: "images/leak6_back.png",
+            zoom: "images/leak6_zoom.png",
+            answer: "누액"
+          },
+          // TODO: 나머지 27개의 예시 객체를 추가하여 총 30개로 확장
+        ];
+        
+        let currentExample = 0;  // 현재 트레이닝 예시 인덱스
+        let currentView = "front";  // 기본 뷰 (front)
+
+        // 페이지 로드 시 첫 번째 트레이닝 예시 로드 및 내비게이션 버튼 생성
+        window.onload = function() {
+          loadTrainingExample();
+          generateExampleNav();
+        };
+
+        // 현재 예시 데이터를 불러와 초기 상태로 설정
+        function loadTrainingExample() {
+          currentView = "front";  // 기본 view를 front로 설정
+          document.getElementById("answer-input").value = "";
+          document.getElementById("result-message").innerText = "";
+          document.getElementById("next-button").style.display = "none";
+          const example = trainingData[currentExample];
+          // 초기 화면은 front view로 표시
+          document.getElementById("training-image").src = example.front;
+        }
+
+        // 트레이닝 이미지 변경 함수: 버튼 클릭 시 해당 뷰의 이미지로 변경
+        function changeView(view) {
+          currentView = view;
+          const example = trainingData[currentExample];
+          if (example[view]) {
+            document.getElementById("training-image").src = example[view];
+          } else {
+            console.error("해당 view의 이미지가 없습니다:", view);
+          }
+        }
+
+        // 정답 확인 함수
+        function checkAnswer() {
+          const example = trainingData[currentExample];
+          const userInput = document.getElementById("answer-input").value.trim();
+          const resultMessage = document.getElementById("result-message");
+          
+          if (userInput === example.answer) {
+            resultMessage.innerText = "정답입니다!";
+            resultMessage.style.color = "green";
+            document.getElementById("next-button").style.display = "inline-block";
+          } else {
+            resultMessage.innerText = "오답입니다.";
+            resultMessage.style.color = "red";
+          }
+        }
+
+        // 다음 트레이닝 예시로 넘어가기
+        function nextExample() {
+          if (currentExample < trainingData.length - 1) {
+            currentExample++;
+            loadTrainingExample();
+          } else {
+            alert("모든 예시를 완료했습니다!");
+            // 모든 예시 완료 후 추가 동작(예: 결과 페이지로 이동 등) 구현 가능
+          }
+        }
+        
+        // 30개 예시 내비게이션 버튼 생성 (예시 번호로 직접 점프)
+        function generateExampleNav() {
+          const navContainer = document.getElementById("example-nav");
+          navContainer.innerHTML = ""; // 기존 내용 제거
+          for (let i = 0; i < trainingData.length; i++) {
+            const btn = document.createElement("button");
+            btn.innerText = i + 1;
+            btn.onclick = function() { jumpToExample(i); };
+            navContainer.appendChild(btn);
+          }
+        }
+
+        // 선택한 번호의 예시로 바로 이동
+        function jumpToExample(index) {
+          currentExample = index;
+          loadTrainingExample();
+        }
+      </script>
+    </main>
+  </div>
+</body>
+</html>
